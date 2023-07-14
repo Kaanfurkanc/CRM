@@ -1,0 +1,106 @@
+﻿@page
+@{
+    ViewData["Title"] = "Add New Student Page";
+}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Web development Course</title>
+</head>
+
+<body>
+    <div>
+        <h3>Add New Student</h3>
+        <form id="CreateForm" action="javascript:void(0);">
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Name</label>
+                <input type="text" class="form-control" id="InputName" aria-describedby="emailHelp">
+            </div>
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Surname</label>
+                <input type="text" class="form-control" id="InputSurname" aria-describedby="emailHelp">
+            </div>
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Student Number</label>
+                <input type="number" class="form-control" id="InputNumber" aria-describedby="emailHelp">
+            </div>
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Email</label>
+                <input type="email" class="form-control" id="InputEmail" aria-describedby="emailHelp">
+            </div>
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Phone Number</label>
+                <input type="text" class="form-control" id="InputPhoneNumber" aria-describedby="emailHelp">
+            </div>
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Birtdate</label>
+                <input type="datetime" class="form-control" id="InputBirtdate" aria-describedby="emailHelp">
+            </div>
+            <div class="mb-3">
+                <label for="exampleInputPassword1" class="form-label">ClassId</label>
+                <input type="number" class="form-control" id="InputClassId">
+            </div>
+            <input type="button" id="submit" onclick="addNewStudent()" class="btn btn-primary" value="Save">
+        </form>
+        <script>
+
+
+            function addNewStudent() {
+                var date = Date.now();
+                var strDate = new Date(date).toISOString();
+                var name = $('#InputName').val();
+                var surname = $('#InputSurname').val();
+                var studentNo = $('#InputNumber').val();
+                var email = $('#InputEmail').val();
+                var phoneNumber = $('#InputPhoneNumber').val();
+                var birtDate = $('#InputBirtdate').val();
+                var classId = $('#InputClassId').val();
+
+                if (!name || !surname || !studentNo || !email || !phoneNumber || !birtDate || !classId) {
+                    alert("Error! Please enter information in all fields.");
+                    return;
+                }
+
+                var data = {
+                    "name": name,
+                    "surname": surname,
+                    "studentNo": studentNo,
+                    "email": email,
+                    "phoneNumber": phoneNumber,
+                    "birtDate": birtDate,
+                    "classId": classId,
+                    "createdDate": strDate
+                };
+
+                $.ajax({
+                    url: "https://localhost:7263/api/v1/Students",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(data),
+                    success: function (result) {
+                        alert("New student created successfully!");
+                    },
+                    error: function (xhr, status, error) {
+                        console.log("Error: " + error);
+                        alert("Error! Unsuccessful process. Please enter information in all fields.");
+                    }
+                });
+            }
+
+
+        </script>
+
+    </div>
+
+   
+</body>
+
+</html>
+
+
+
+
+

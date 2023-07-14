@@ -1,0 +1,75 @@
+﻿@page
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Web development Course</title>
+</head>
+
+<body>
+
+    <table id="announcements" class="table caption-top">
+        <caption><h2>Annoucements</h2></caption>
+        <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Title</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+
+    <script>
+
+        function LoadAnnouncements(){
+            var table = $("#announcements");
+
+
+            $.ajax({
+                method: "GET",
+                url: "https://localhost:7263/api/v1/Announcements",
+                success: function(response) {
+
+                    var tbody = $("#announcements tbody");
+                    var data = JSON.parse(response);
+                    var id = 1;
+                    console.log(data);
+                    $.each(data, function(index, announcement){
+
+                        var tr = $("<tr>");
+
+                        tr.append("<td>" + id + "</td>");
+                        tr.append("<td>" + announcement.title + "</td>");
+                        tr.append("<td>" + announcement.description+ "</td>");
+                        console.log(announcement.title);
+                        tbody.append(tr);
+                        id++;
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.log("Hata: " + error);
+                    alert("Hata: " + error);
+                }
+            });
+            };
+
+
+        $(function (){
+
+            LoadAnnouncements();
+        });
+
+    </script>
+
+</body>
+
+</html>
+

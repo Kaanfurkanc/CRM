@@ -1,0 +1,135 @@
+﻿@page
+@{
+    ViewData["Title"] = "Update Student Page";
+}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Update Student</title>
+</head>
+
+<body>
+    <div>
+        <h3>Update Student</h3>
+        <form>
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Name</label>
+                <input type="text" class="form-control" id="InputName" aria-describedby="emailHelp">
+            </div>
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Surname</label>
+                <input type="text" class="form-control" id="InputSurname" aria-describedby="emailHelp">
+            </div>
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Student Number</label>
+                <input type="number" class="form-control" id="InputNumber" aria-describedby="emailHelp">
+            </div>
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Email</label>
+                <input type="email" class="form-control" id="InputEmail" aria-describedby="emailHelp">
+            </div>
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Phone Number</label>
+                <input type="text" class="form-control" id="InputPhoneNumber" aria-describedby="emailHelp">
+            </div>
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Birtdate</label>
+                <input type="datetime" class="form-control" id="InputBirtdate" aria-describedby="emailHelp">
+            </div>
+            <div class="mb-3">
+                <label for="exampleInputPassword1" class="form-label">Class Id</label>
+                <input type="number" class="form-control" id="InputClassId">
+            </div>
+            <input type="button" onclick="update()" class="btn btn-primary" value="Update">
+        </form>
+        <script>
+
+            function loadData(studentId) {
+
+                $.ajax({
+                    method: "GET",
+                    url: "https://localhost:7263/api/v1/Students/" + studentId,
+
+                    success: function (response) {
+                        var student = JSON.parse(response);;
+                        $("#InputName").val(student.name);
+                        $("#InputSurname").val(student.surname);
+                        $("#InputNumber").val(student.studentNo);
+                        $("#InputEmail").val(student.email);
+                        $("#InputBirtdate").val(student.birtDate);
+                        $("#InputPhoneNumber").val(student.phoneNumber);
+                        $("#InputClassId").val(student.classId);
+
+                    },
+                    error: function (xhr, status, error) {
+                        console.log("Error: " + error);
+                        alert("Error: Student did not upload . " + error);
+                    },
+                })//ajax
+            }//load function
+
+            function update() {
+                var urlParams = new URLSearchParams(window.location.search);
+                var studentId = urlParams.get('id');
+
+                var date = Date.now();
+                var strDate = new Date(date).toISOString();
+                var name = $('#InputName').val();
+                var surname = $('#InputSurname').val();
+                var studentNo = $('#InputNumber').val();
+                var email = $('#InputEmail').val();
+                var phoneNumber = $('#InputPhoneNumber').val();
+                var birtDate = $('#InputBirtdate').val();
+                var classId = $('#InputClassId').val();
+
+                if (!name || !surname || !studentNo || !email || !phoneNumber || !birtDate || !classId) {
+                    alert("Error! Please enter information in all fields.");
+                    return;
+                }
+
+                var data = {
+                    "name": name,
+                    "surname": surname,
+                    "studentNo": studentNo,
+                    "email": email,
+                    "phoneNumber": phoneNumber,
+                    "birtDate": birtDate,
+                    "classId": classId,
+                    "id": studentId,
+                };
+                console.log(JSON.stringify(data));
+
+                $.ajax({
+                    url: "https://localhost:7263/api/v1/Students/" + studentId,
+                    type: 'PUT',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(data),
+
+                    success: function (result) {
+                        alert("Student updated successfully!");
+                    },
+                    error: function (xhr, status, error) {
+                        console.log("Error: " + error + status);
+                        alert("Error! Unsuccessful process.The student did not update ! Please enter information in all fields.");
+                    }
+                });
+            }
+
+            $(function () {
+                var urlParams = new URLSearchParams(window.location.search);
+                var studentId = urlParams.get('id');
+                loadData(studentId);
+            });
+        </script>
+    </div>
+
+    <div style="float:right">
+        <a href="https://localhost:7214/Students">
+            <button type="button" class="btn btn-warning">Back</button>
+        </a>
+    </div>
+
+</body>
+</html>

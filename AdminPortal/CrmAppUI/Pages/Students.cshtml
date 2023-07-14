@@ -1,0 +1,221 @@
+﻿@page
+@{
+    ViewData["Title"] = "Student Page";
+}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Web development Course</title>
+</head>
+
+<body>
+
+    <div style="float:left;width:30%;margin-top: 15px">
+        <div class="form-floating mb-3">
+            <h4>Number Of Student</h4>
+            <button type="button" class="btn btn-success"></button>
+        </div>
+        <h3>Search Student</h3>
+        <br>
+        <br>
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="nameInput" placeholder="name@example.com">
+            <label for="floatingInput">Name</label>
+        </div>
+        <div class="form-floating">
+            <input type="number" class="form-control" id="numberInput" placeholder="Password">
+            <label for="floatingPassword">Student Number</label>
+        </div>
+        <div class="d-grid gap-2 d-md-block" style="margin-top: 15px">
+            <button id="buttonGet" class="btn btn-primary" type="button" onclick="searchStudents()">Search</button>
+        </div>
+
+
+        <div class="d-grid gap-2 col-6 mx-auto" style="float:left;margin-top: 250px">
+            <a href="/NewStudent">
+                <button class="btn btn-primary" type="button">Add New Student</button>
+            </a>
+        </div>
+    </div>
+    <script>
+
+        function searchStudents() {
+            var name = $("#nameInput").val();
+            var studentNumber = $("#numberInput").val();
+
+            if (name === "" && studentNumber === "") {
+                LoadStudents(1);
+            }
+            else {
+                $.ajax({
+                    url: "https://localhost:7263/api/v1/Students",
+                    type: "GET",
+                    data: {
+                        name: name,
+                        studentNumber: studentNumber
+                    },
+                    success: function (response) {
+
+
+                        var tbody = $("#students tbody");
+                        tbody.empty();
+                        var data = JSON.parse(response);
+                        var id = 1;
+                        if (data.length === 0) {
+                            alert("Could not found any student. Please enter right student name or student number :)");
+                        }
+                        else {
+                            for (var i = 0; i < data.length; i++) {
+                                var student = data[i];
+                                var row = $("<tr>");
+
+                                row.append("<td>" + id + "</td>");
+                                row.append("<td>" + student.name + "</td>");
+                                row.append("<td>" + student.surname + "</td>");
+                                row.append("<td>" + student.studentNo + "</td>");
+                                row.append("<td>" + student.email + "</td>");
+                                row.append("<td>" + student.phoneNumber + "</td>");
+                                row.append("<td>" + student.birtDate + "</td>");
+                                row.append("<td><button type='button' id='deleteButton' onclick='deleteStudent(" + student.id + ")'class= 'btn btn-danger' > Delete </button></td>");
+                                row.append("<td>" + "<a href='https://localhost:7214/UpdateStudent?id=" + student.id + "' >" + "<button type='button' id='updateButton' class='btn btn-info'>Update</button>" + " </a> " + "</td>");
+                                id++;
+
+                                tbody.append(row);
+                            }
+                        }
+
+                    },
+                    error: function (xhr, status, error) {
+                        console.log("Error: " + error);
+                        alert("Error: " + error);
+                    },
+
+                });
+            }
+        }
+
+        function deleteStudent(studentId) {
+            var confirmation = confirm("Are you sure? The student will be deleted!");
+
+            console.log(studentId);
+            if (confirmation) {
+                var settings = {
+                    url: "http://localhost:5041/api/v1/Students/" + studentId,
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                };
+
+                $.ajax(settings).done(function (response) {
+                    console.log(response);
+                    LoadStudents(1);
+                });
+            }
+        }
+
+
+    </script>
+    <div style="float:right;width:55%">
+        <table id="students" class="table caption-top">
+            <caption><h2>Students</h2></caption>
+            <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Surname</th>
+                    <th scope="col">Student Number</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Phone Number</th>
+                    <th scope="col">Birtdate</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+        <div style="margin-left: 300px">
+            <nav aria-label="Page navigation example">
+                <ul id="paginationId" class="pagination">
+                    <script>
+                        var ul = $("#paginationId");
+                        var page = 1;
+                        ul.append("<li class='page-item'>" + "<a class='page-link' onclick='LoadStudents(page -= 1)'>Previous</a>" + "</li>");
+                        ul.append("<li class='page-item'>" + "<a onclick='LoadStudents(page)' class='page-link' href='#'>1</a>" + "</li>");
+                        ul.append("<li class='page-item'>" + "<a onclick='LoadStudents(page += 1)' class='page-link' href='#'>Next</a>" + "</li>");
+                    </script>
+                </ul>
+            </nav>
+        </div>
+
+
+
+        <script>
+            function LoadStudents(pageNumber) {
+                var table = $("#students");
+                var pageSize = 4;
+                $.ajax({
+                    method: "GET",
+                    url: "https://localhost:7263/api/v1/Students",
+                    data: {
+                        pageNumber: pageNumber,
+                        pageSize: pageSize
+                    },
+                    success: function (response) {
+
+                        var tbody = $("#students tbody");
+                        tbody.empty();
+                        var data = JSON.parse(response);
+                        var id = 1;
+                        if (pageNumber > 1) {
+                            id += (pageNumber - 1) * pageSize;
+                        }
+                        if (data == null) {
+                            alert("no any data !");
+                        }
+                        $.each(data, function (index, student) {
+
+                            var tr = $("<tr>");
+
+                            tr.append("<td>" + id + "</td>");
+                            tr.append("<td>" + student.name + "</td>");
+                            tr.append("<td>" + student.surname + "</td>");
+                            tr.append("<td>" + student.studentNo + "</td>");
+                            tr.append("<td>" + student.email + "</td>");
+                            tr.append("<td>" + student.phoneNumber + "</td>");
+                            tr.append("<td>" + student.birtDate + "</td>");
+                            tr.append("<td><button type='button' id='deleteButton' onclick='deleteStudent(" + student.id + ")'class= 'btn btn-danger' > Delete </button></td>");
+                            tr.append("<td>" + "<a href='https://localhost:7214/UpdateStudent?id=" + student.id + "' >" + "<button type='button' id='updateButton' class='btn btn-info'>Update</button>" + " </a> " + "</td>");
+                            tbody.append(tr);
+                            id++;
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.log("Error: " + error);
+                        alert("Error: " + error);
+                    }
+                });
+            };
+
+
+            $(function () {
+
+                LoadStudents(1);
+            });
+        </script>
+    </div>
+    <div style="clear:both;"></div>
+
+    <script>
+
+
+    </script>
+
+
+</body>
+
+</html>
