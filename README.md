@@ -22,7 +22,7 @@ Proje microservise kolayca çevirilebilecek şekilde SOA geliştirilecek. İleri
 <br>
 Restfull API'ler olarak geliştirilecek. <br>
 DB MSSQL <br>
-Cache redis kullanılabilir <br>
+Cache redis kullanılabilir <br> 
 
 IAM servis için JWT kullanılabilir . IAM service için database olarak MongoDb kullanılmıştır .
 
